@@ -55,7 +55,7 @@
    (PROTIP: =C-c C-c=)
 
    #+NAME: org-babel-execute:typescript
-   #+begin_src elisp :exports both
+   #+begin_src elisp :exports code
      (defun org-babel-execute:typescript (body params)
        (let* ((fin (org-babel-temp-file "tsc-" ".ts"))
               (args (cdr (assoc :args params)))
@@ -71,6 +71,8 @@
    #+RESULTS: org-babel-execute:typescript
    : org-babel-execute:typescript
    
+   Testing
+
    #+NAME: mic-check-final
    #+begin_src typescript :args --noEmit --strict :results value code :exports both
      const x: number = false;

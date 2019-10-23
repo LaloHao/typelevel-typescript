@@ -1,17 +1,17 @@
 
 # Table of Contents
 
-1.  [typelevel-typescript](#org55bf25a)
-    1.  [Jump-start](#org1037192)
+1.  [typelevel-typescript](#org324464e)
+    1.  [Jump-start](#org41b79ba)
 
 
 
-<a id="org55bf25a"></a>
+<a id="org324464e"></a>
 
 # typelevel-typescript
 
 
-<a id="org1037192"></a>
+<a id="org41b79ba"></a>
 
 ## Jump-start
 
@@ -62,7 +62,7 @@ least for now, so here's a quick eval method to run it in here:
               (regexp (format "^.+%s" fin)))
           (replace-regexp-in-string regexp "" result))))
 
-    org-babel-execute:typescript
+Testing
 
     const x: number = false;
     console.log(x);
