@@ -1,0 +1,19 @@
+* typelevel-typescript
+  I'm gonna load bash execution language to org mode by executing this code
+  block with =C-c C-c= read as =Control-C Control-C=:
+
+  #+NAME: babel-load-shell
+  #+begin_src elisp :results output silent
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((shell . t)))
+  #+end_src
+
+  Let's start with the usual boilerplate
+
+  #+NAME: npm-init
+  #+begin_src shell :results output silent
+    # mkdir typelevel-typescript
+    # cd typelevel-typescript
+    npm init -y
+  #+end_src
