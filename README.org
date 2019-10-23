@@ -4,7 +4,7 @@
    block with =C-c C-c= read as =Control-C Control-C=:
 
    #+NAME: babel-load-shell
-   #+begin_src elisp :results output silent
+   #+begin_src elisp :results output silent :exports both
      (org-babel-do-load-languages
       'org-babel-load-languages
       '((shell . t)
@@ -14,7 +14,7 @@
    Let's start with the usual boilerplate
 
    #+NAME: npm-init
-   #+begin_src shell :results output silent
+   #+begin_src shell :results output silent :exports both
      # mkdir typelevel-typescript
      # cd typelevel-typescript
      npm init -y
@@ -23,12 +23,12 @@
    Locally install typescript
 
    #+NAME: typescript-install
-   #+begin_src shell :results value code
+   #+begin_src shell :results value code :exports both
      npm install --save typescript
    #+end_src
    
    #+RESULTS: typescript-install
-   #+begin_src shell :results value code
+   #+begin_src shell :results value code :exports both
    + typescript@3.6.4
    added 1 package from 1 contributor and audited 1 package in 1.121s
    found 0 vulnerabilities
@@ -40,12 +40,12 @@
    our code to fail, and our compiler to tell us when.
 
    #+NAME: mic-check
-   #+begin_src shell :results value code
+   #+begin_src shell :results value code :exports both
      ./node_modules/.bin/tsc --noEmit --strict ./test.ts || true 2>1
    #+end_src
 
    #+RESULTS: mic-check
-   #+begin_src shell
+   #+begin_src shell :exports both
    test.ts(1,7): error TS2322: Type '"10"' is not assignable to type 'number'.
    #+end_src
 
@@ -55,7 +55,7 @@
    (PROTIP: =C-c C-c=)
 
    #+NAME: org-babel-execute:typescript
-   #+begin_src elisp
+   #+begin_src elisp :exports both
      (defun org-babel-execute:typescript (body params)
        (let* ((fin (org-babel-temp-file "tsc-" ".ts"))
               (args (cdr (assoc :args params)))
@@ -72,13 +72,13 @@
    : org-babel-execute:typescript
    
    #+NAME: mic-check-final
-   #+begin_src typescript :args --noEmit --strict :results value code
+   #+begin_src typescript :args --noEmit --strict :results value code :exports both
      const x: number = false;
      console.log(x);
    #+end_src
 
    #+RESULTS: mic-check-final
-   #+begin_src typescript
+   #+begin_src typescript :exports both
    (1,7): error TS2322: Type 'false' is not assignable to type 'number'.
    #+end_src
 
@@ -87,13 +87,13 @@
    /(background checks one more time while no one is looking)/
 
    #+NAME: mic-check-final-final-just-in-case
-   #+begin_src typescript :args --noEmit --strict :results value code
+   #+begin_src typescript :args --noEmit --strict :results value code :exports both
      const x: number = false;
      const x: number = false;
    #+end_src
 
    #+RESULTS: mic-check-final-final-just-in-case
-   #+begin_src typescript
+   #+begin_src typescript :exports both
    (1,7): error TS2322: Type 'false' is not assignable to type 'number'.
    (1,7): error TS2451: Cannot redeclare block-scoped variable 'x'.
    (2,7): error TS2322: Type 'false' is not assignable to type 'number'.
