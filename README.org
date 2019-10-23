@@ -1,19 +1,105 @@
 * typelevel-typescript
-  I'm gonna load bash execution language to org mode by executing this code
-  block with =C-c C-c= read as =Control-C Control-C=:
+** Jump-start
+   I'm gonna load bash execution language to =emacs= =org mode= by executing this code
+   block with =C-c C-c= read as =Control-C Control-C=:
 
-  #+NAME: babel-load-shell
-  #+begin_src elisp :results output silent
-    (org-babel-do-load-languages
-     'org-babel-load-languages
-     '((shell . t)))
-  #+end_src
+   #+NAME: babel-load-shell
+   #+begin_src elisp :results output silent
+     (org-babel-do-load-languages
+      'org-babel-load-languages
+      '((shell . t)
+        (typescript . t)))
+   #+end_src
 
-  Let's start with the usual boilerplate
+   Let's start with the usual boilerplate
 
-  #+NAME: npm-init
-  #+begin_src shell :results output silent
-    # mkdir typelevel-typescript
-    # cd typelevel-typescript
-    npm init -y
-  #+end_src
+   #+NAME: npm-init
+   #+begin_src shell :results output silent
+     # mkdir typelevel-typescript
+     # cd typelevel-typescript
+     npm init -y
+   #+end_src
+
+   Locally install typescript
+
+   #+NAME: typescript-install
+   #+begin_src shell :results value code
+     npm install --save typescript
+   #+end_src
+   
+   #+RESULTS: typescript-install
+   #+begin_src shell :results value code
+   + typescript@3.6.4
+   added 1 package from 1 contributor and audited 1 package in 1.121s
+   found 0 vulnerabilities
+   #+end_src
+
+   There's no way of executing (right now) typescript code blocks inside
+   org-mode, so lets do a quick hack, to run a file from shell instead.
+   Note the =|| true= to accept errors, that's what we want after all,
+   our code to fail, and our compiler to tell us when.
+
+   #+NAME: mic-check
+   #+begin_src shell :results value code
+     ./node_modules/.bin/tsc --noEmit --strict ./test.ts || true 2>1
+   #+end_src
+
+   #+RESULTS: mic-check
+   #+begin_src shell
+   test.ts(1,7): error TS2322: Type '"10"' is not assignable to type 'number'.
+   #+end_src
+
+   Nice, but that probably sucks, i'd rather call typescript in org-mode, at
+   least for now, so here's a quick eval method to run it in here: 
+   
+   (PROTIP: =C-c C-c=)
+
+   #+NAME: org-babel-execute:typescript
+   #+begin_src elisp
+     (defun org-babel-execute:typescript (body params)
+       (let* ((fin (org-babel-temp-file "tsc-" ".ts"))
+              (args (cdr (assoc :args params)))
+              (cmd (format "./node_modules/.bin/tsc %s %s || true" args fin)))
+         (with-temp-file fin (insert body))
+         ;; Theres some annoying file url (the input) being prepended to the output,
+         ;; so eval tsc first, replace it (remove it) and then return it's result
+         (let ((result (org-babel-eval cmd ""))
+               (regexp (format "^.+%s" fin)))
+           (replace-regexp-in-string regexp "" result))))
+   #+end_src
+
+   #+RESULTS: org-babel-execute:typescript
+   : org-babel-execute:typescript
+   
+   #+NAME: mic-check-final
+   #+begin_src typescript :args --noEmit --strict :results value code
+     const x: number = false;
+     console.log(x);
+   #+end_src
+
+   #+RESULTS: mic-check-final
+   #+begin_src typescript
+   (1,7): error TS2322: Type 'false' is not assignable to type 'number'.
+   #+end_src
+
+   GREAT!
+   
+   /(background checks one more time while no one is looking)/
+
+   #+NAME: mic-check-final-final-just-in-case
+   #+begin_src typescript :args --noEmit --strict :results value code
+     const x: number = false;
+     const x: number = false;
+   #+end_src
+
+   #+RESULTS: mic-check-final-final-just-in-case
+   #+begin_src typescript
+   (1,7): error TS2322: Type 'false' is not assignable to type 'number'.
+   (1,7): error TS2451: Cannot redeclare block-scoped variable 'x'.
+   (2,7): error TS2322: Type 'false' is not assignable to type 'number'.
+   (2,7): error TS2451: Cannot redeclare block-scoped variable 'x'.
+   #+end_src
+
+   Now to some serious [1] stuff.
+
+   [1] Citation needed
