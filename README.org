@@ -105,3 +105,44 @@
    Now to some serious [1] stuff.
 
    [1] Citation needed
+** Polymorphic react components
+   The problem:
+
+
+   #+NAME: poly-assert-intro
+   #+begin_src typescript :args --noEmit --strict :exports both
+     function assert(x: never): never {
+       throw new Error("Unexpected object: " + x);
+     }
+
+     assert('hi');
+   #+end_src
+
+   #+RESULTS: poly-assert-intro
+   : (5,8): error TS2345: Argument of type '"hi"' is not assignable to parameter of type 'never'.
+
+   #+begin_src typescript
+     type Identifiable<T extends {}, I extends string> = Identifier<I> extends T;
+   #+end_src
+
+   #+NAME: useReducerP
+   #+begin_src typescript :args --noEmit --strict :exports both
+     /* type level definitions */
+     // core data type
+     type ActionP<T> = { type: string; payload: T; }
+     // constructor
+     type MkActionP = {
+         <T>(action: string, payload: T): ActionP<T>;
+     }
+     // domain interaction
+     type DispatchP<T> = (action: string) => (payload: T) => void;
+     type ReducerP<S, T> = (action: string) => (payload: T) => (state: S, action: ActionP<T>) => S;
+
+     /* implementation */
+     export const mkActionP: MkActionP = <T>(action: string, payload: T) => ({ type: action, payload });
+     export const action = mkActionP; // alias for easier use
+   #+end_src
+
+   #+RESULTS: useReducerP
+   : (13,14): error TS2322: Type '<T>(action: string) => (payload: T) => { type: string; payload: T; }' is not assignable to type 'MkActionP'.
+   :   Type '(payload: unknown) => { type: string; payload: unknown; }' is missing the following properties from type 'ActionP<T>': type, payload

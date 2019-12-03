@@ -11,5 +11,11 @@
   "license": "Unlicense",
   "dependencies": {
     "typescript": "^3.6.4"
+  },
+  "devDependencies": {
+    "@types/node": "^12.11.7",
+    "dts-jest": "^23.0.0",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.1.0"
   }
 }
